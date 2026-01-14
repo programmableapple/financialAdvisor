@@ -153,7 +153,8 @@ exports.getProfile = async (req, res) => {
     res.json({
       id: user._id,
       name: user.name,
-      email: user.email
+      email: user.email,
+      createdAt: user.createdAt || user._id.getTimestamp()
     });
   } catch (err) {
     logger.error('Get Profile Error: ' + err.message);

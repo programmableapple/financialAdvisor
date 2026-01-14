@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { BiHomeAlt, BiMoney, BiWallet, BiLogOut } from 'react-icons/bi';
+import { BiHomeAlt, BiMoney, BiWallet, BiLogOut, BiUser, BiTrendingUp, BiTargetLock, BiTimeFive } from 'react-icons/bi';
 import { ReactNode, ElementType } from 'react';
 
 interface SidebarLinkProps {
@@ -57,6 +57,10 @@ const Layout = ({ children }: LayoutProps) => {
           <SidebarLink to="/dashboard" icon={BiHomeAlt} text="Dashboard" />
           <SidebarLink to="/transactions" icon={BiMoney} text="Transactions" />
           <SidebarLink to="/budgets" icon={BiWallet} text="Budgets" />
+          <SidebarLink to="/trends" icon={BiTrendingUp} text="Trends" />
+          <SidebarLink to="/goals" icon={BiTargetLock} text="Goals" />
+          <SidebarLink to="/recurring" icon={BiTimeFive} text="Recurring" />
+          <SidebarLink to="/profile" icon={BiUser} text="Profile" />
         </nav>
 
         <div className="pt-8 border-t border-white/10">

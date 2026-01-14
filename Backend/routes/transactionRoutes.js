@@ -7,6 +7,7 @@ router.use(auth);
 
 router.post('/', transactionController.createTransaction);
 router.get('/', transactionController.getTransactions);
+router.get('/trends', transactionController.getSpendingTrends);
 router.get('/stats', transactionController.getStats);
 router.get('/:id', transactionController.getTransactionById);
 router.put('/:id', transactionController.updateTransaction);

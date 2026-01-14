@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import api from '../api/axios';
 import Layout from '../components/Layout';
 import { toast } from 'react-hot-toast';
-import { BiPlus, BiSearch, BiX } from 'react-icons/bi';
+import { BiPlus, BiSearch, BiX, BiTrash } from 'react-icons/bi';
 
 interface Transaction {
     _id: string;
@@ -92,6 +92,18 @@ const Transactions = () => {
             fetchTransactions();
         } catch (error: any) {
             toast.error(error.response?.data?.message || 'Failed to add transaction');
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!window.confirm('Are you sure you want to delete this transaction?')) return;
+        try {
+            await api.delete(`/transactions/${id}`);
+            toast.success('Transaction deleted');
+            setTransactions(prev => prev.filter(t => t._id !== id));
+        } catch (error) {
+            console.error("Delete error", error);
+            toast.error('Failed to delete transaction');
         }
     };
 
@@ -206,6 +218,7 @@ const Transactions = () => {
                                 <th className="px-8 py-4 text-[0.7rem] font-medium text-white/40 uppercase tracking-widest">Description</th>
                                 <th className="px-8 py-4 text-[0.7rem] font-medium text-white/40 uppercase tracking-widest">Category</th>
                                 <th className="px-8 py-4 text-right text-[0.7rem] font-medium text-white/40 uppercase tracking-widest">Amount</th>
+                                <th className="px-8 py-4 text-right text-[0.7rem] font-medium text-white/40 uppercase tracking-widest">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -231,6 +244,15 @@ const Transactions = () => {
                                         </td>
                                         <td className={`px-8 py-5 text-right font-semibold ${t.type === 'income' ? 'text-[#9ece6a]' : 'text-[#f7768e]'}`}>
                                             {t.type === 'income' ? '+' : '-'}${t.amount.toLocaleString()}
+                                        </td>
+                                        <td className="px-8 py-5 text-right">
+                                            <button
+                                                onClick={() => handleDelete(t._id)}
+                                                className="p-2 rounded-lg hover:bg-white/5 text-white/40 hover:text-red-400 transition-colors"
+                                                title="Delete transaction"
+                                            >
+                                                <BiTrash size={18} />
+                                            </button>
                                         </td>
                                     </tr>
                                 ))

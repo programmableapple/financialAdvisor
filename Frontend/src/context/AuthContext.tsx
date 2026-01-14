@@ -6,6 +6,7 @@ interface User {
     id?: string;
     name: string;
     email: string;
+    createdAt?: string;
     [key: string]: any;
 }
 
@@ -44,14 +45,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const token = localStorage.getItem('token');
         if (token) {
             try {
-                // Assuming we might have a 'me' endpoint or just trusting the token for now
+                // Try to fetch fresh user data
+                const res = await api.get('/auth/profile');
+                console.log('Fetched updated profile:', res.data); // Debug log
+                setUser(res.data);
+                localStorage.setItem('user', JSON.stringify(res.data));
+            } catch (error) {
+                console.error("Auth check failed", error);
+                // Fallback to local storage if API fails (e.g. offline) but usually we should logout if token invalid
                 const savedUser = localStorage.getItem('user');
                 if (savedUser) {
                     setUser(JSON.parse(savedUser));
+                } else {
+                    localStorage.removeItem('token');
                 }
-            } catch (error) {
-                console.error("Auth check failed", error);
-                localStorage.removeItem('token');
             }
         }
         setLoading(false);

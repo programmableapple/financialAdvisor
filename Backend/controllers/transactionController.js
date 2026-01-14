@@ -146,3 +146,90 @@ exports.getStats = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
+exports.getSpendingTrends = async (req, res) => {
+  try {
+    const today = new Date();
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(today.getMonth() - 5);
+    sixMonthsAgo.setDate(1); // Start of month
+
+    const transactions = await Transaction.find({
+      userId: req.userId,
+      type: 'expense',
+      date: { $gte: sixMonthsAgo }
+    }).sort({ date: 1 });
+
+    // 1. Weekly/Monthly Trends
+    const monthlyData = {};
+    transactions.forEach(t => {
+      const monthKey = new Date(t.date).toLocaleString('default', { month: 'short', year: 'numeric' });
+      if (!monthlyData[monthKey]) monthlyData[monthKey] = 0;
+      monthlyData[monthKey] += t.amount;
+    });
+
+    const trends = Object.keys(monthlyData).map(key => ({
+      name: key,
+      amount: monthlyData[key]
+    }));
+
+    // 2. Highest Spending Categories (All time in selected range)
+    const categoryTotals = {};
+    transactions.forEach(t => {
+      if (!categoryTotals[t.category]) categoryTotals[t.category] = 0;
+      categoryTotals[t.category] += t.amount;
+    });
+
+    const highestSpendingCategories = Object.keys(categoryTotals)
+      .map(key => ({ name: key, value: categoryTotals[key] }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
+
+    // 3. Unusual Patterns (Compare current month to average)
+    // Calculate average excluding current month (if possible)
+    const currentMonthKey = today.toLocaleString('default', { month: 'short', year: 'numeric' });
+
+    const unusualPatterns = [];
+    const categories = [...new Set(transactions.map(t => t.category))];
+
+    categories.forEach(cat => {
+      const catTransactions = transactions.filter(t => t.category === cat);
+      const history = catTransactions.filter(t => {
+        const tDate = new Date(t.date).toLocaleString('default', { month: 'short', year: 'numeric' });
+        return tDate !== currentMonthKey;
+      });
+
+      const currentMonthTx = catTransactions.filter(t => {
+        const tDate = new Date(t.date).toLocaleString('default', { month: 'short', year: 'numeric' });
+        return tDate === currentMonthKey;
+      });
+
+      const currentSpent = currentMonthTx.reduce((sum, t) => sum + t.amount, 0);
+
+      if (history.length > 0) {
+        // Simple average of total spent / number of distinct months found in history
+        const distinctMonths = new Set(history.map(t => new Date(t.date).toLocaleString('default', { month: 'short', year: 'numeric' }))).size;
+        const totalHistorySpent = history.reduce((sum, t) => sum + t.amount, 0);
+        const average = distinctMonths > 0 ? totalHistorySpent / distinctMonths : 0;
+
+        if (currentSpent > average * 1.5 && average > 0) {
+          unusualPatterns.push({
+            category: cat,
+            current: currentSpent,
+            average: average,
+            percentIncrease: Math.round(((currentSpent - average) / average) * 100)
+          });
+        }
+      }
+    });
+
+    res.json({
+      trends,
+      highestSpendingCategories,
+      unusualPatterns
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
