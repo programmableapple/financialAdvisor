@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { BiEnvelope, BiLockAlt, BiUser } from 'react-icons/bi';
+import { BiEnvelope, BiLockAlt } from 'react-icons/bi';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -21,7 +21,7 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen bg-black flex items-center justify-center p-6">
+        <div className="min-h-screen bg-transparent flex items-center justify-center p-6">
             <div className="glass-card w-full max-w-md p-10">
                 <div className="mb-10 text-center">
                     <h1 className="text-3xl font-medium tracking-tight mb-2 text-white">Welcome back</h1>
@@ -38,7 +38,6 @@ const Login = () => {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="pl-12"
-                                placeholder="name@example.com"
                                 required
                             />
                         </div>
@@ -53,7 +52,6 @@ const Login = () => {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="pl-12"
-                                placeholder="••••••••"
                                 required
                             />
                         </div>

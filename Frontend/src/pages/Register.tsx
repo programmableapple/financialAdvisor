@@ -22,7 +22,7 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen bg-black flex items-center justify-center p-6">
+        <div className="min-h-screen bg-transparent flex items-center justify-center p-6">
             <div className="glass-card w-full max-w-md p-10">
                 <div className="mb-10 text-center">
                     <h1 className="text-3xl font-medium tracking-tight mb-2 text-white">Create Account</h1>
@@ -39,7 +39,6 @@ const Register = () => {
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 className="pl-12"
-                                placeholder="John Doe"
                                 required
                             />
                         </div>
@@ -54,7 +53,6 @@ const Register = () => {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="pl-12"
-                                placeholder="name@example.com"
                                 required
                             />
                         </div>
@@ -69,7 +67,6 @@ const Register = () => {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="pl-12"
-                                placeholder="••••••••"
                                 required
                             />
                         </div>

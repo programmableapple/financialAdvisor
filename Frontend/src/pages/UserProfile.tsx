@@ -10,29 +10,17 @@ const UserProfile = () => {
     const { user } = useAuth();
     const [balance, setBalance] = useState<number | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
+    const [passwords, setPasswords] = useState({
+        oldPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+    });
+    const [updating, setUpdating] = useState(false);
 
     useEffect(() => {
         const fetchBalance = async () => {
             try {
-                // Fetch stats to get the balance
-                // We can reuse the stats endpoint or create a specific one. 
-                // Since the dashboard uses /transactions/stats, we'll use that.
-                // However, stats usually takes a month/year filter.
-                // If we want "Total" balance (all time), we might need to adjust the backend or pass a wide range.
-                // But the user request said "total balance that is also visible from the dashboard".
-                // Dashboard defaults to current month. Let's assume the user means "Current Month's Balance" or we can calculate total.
-                // Let's try to get TOTAL balance across all time if possible, or just replicate dashboard behavior.
-                // Dashboard behavior:
-                // const today = new Date();
-                // params: { month: today.getMonth() + 1, year: today.getFullYear() }
-
-                // Let's stick to current month for consistency with Dashboard "Total Balance" 
-                // OR we could fetch without params if the backend supports "all time" when no params are provided.
-                // Looking at backend code:
-                // if (month && year) { filter... } 
-                // If NO month/year provided, it fetches ALL transactions!
-                // So calling without params gives all-time stats. Perfect!
-
                 const res = await api.get('/transactions/stats');
                 setBalance(res.data.balance);
             } catch (error) {
@@ -45,6 +33,32 @@ const UserProfile = () => {
 
         fetchBalance();
     }, []);
+
+    const handlePasswordChange = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (passwords.newPassword !== passwords.confirmPassword) {
+            return toast.error('New passwords do not match');
+        }
+
+        if (passwords.newPassword.length < 6) {
+            return toast.error('Password must be at least 6 characters');
+        }
+
+        setUpdating(true);
+        try {
+            await api.post('/auth/change-password', {
+                oldPassword: passwords.oldPassword,
+                newPassword: passwords.newPassword
+            });
+            toast.success('Password changed successfully');
+            setIsChangingPassword(false);
+            setPasswords({ oldPassword: '', newPassword: '', confirmPassword: '' });
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || 'Failed to change password');
+        } finally {
+            setUpdating(false);
+        }
+    };
 
     const memberSince = user?.createdAt
         ? new Date(user.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
@@ -95,7 +109,7 @@ const UserProfile = () => {
                         </div>
                     </div>
 
-                    {/* Placeholder for future settings */}
+                    {/* Account Settings */}
                     <div className="glass-card p-8">
                         <h3 className="text-xl font-medium mb-6 text-white">Account Settings</h3>
                         <div className="space-y-4">
@@ -106,12 +120,81 @@ const UserProfile = () => {
                                 </div>
                                 <button className="text-blue-400 hover:text-blue-300 text-sm font-medium">Manage</button>
                             </div>
-                            <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5">
-                                <div>
-                                    <p className="text-white font-medium">Security</p>
-                                    <p className="text-white/40 text-sm">Change password and 2FA</p>
+
+                            <div className="p-4 rounded-xl bg-white/5 border border-white/5 space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-white font-medium">Security</p>
+                                        <p className="text-white/40 text-sm">Change password and 2FA</p>
+                                    </div>
+                                    {!isChangingPassword && (
+                                        <button
+                                            onClick={() => setIsChangingPassword(true)}
+                                            className="text-blue-400 hover:text-blue-300 text-sm font-medium"
+                                        >
+                                            Update
+                                        </button>
+                                    )}
                                 </div>
-                                <button className="text-blue-400 hover:text-blue-300 text-sm font-medium">Update</button>
+
+                                {isChangingPassword && (
+                                    <form onSubmit={handlePasswordChange} className="pt-4 border-t border-white/5 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="md:col-span-2">
+                                                <label className="block text-xs font-medium text-white/40 uppercase tracking-wider mb-1.5 ml-1">Current Password</label>
+                                                <input
+                                                    type="password"
+                                                    required
+                                                    value={passwords.oldPassword}
+                                                    onChange={(e) => setPasswords({ ...passwords, oldPassword: e.target.value })}
+                                                    className="input-field"
+                                                    placeholder="Enter current password"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-medium text-white/40 uppercase tracking-wider mb-1.5 ml-1">New Password</label>
+                                                <input
+                                                    type="password"
+                                                    required
+                                                    value={passwords.newPassword}
+                                                    onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
+                                                    className="input-field"
+                                                    placeholder="New password"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-medium text-white/40 uppercase tracking-wider mb-1.5 ml-1">Confirm New Password</label>
+                                                <input
+                                                    type="password"
+                                                    required
+                                                    value={passwords.confirmPassword}
+                                                    onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
+                                                    className="input-field"
+                                                    placeholder="Confirm new password"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-3 pt-2">
+                                            <button
+                                                type="submit"
+                                                disabled={updating}
+                                                className="btn-primary py-2.5"
+                                            >
+                                                {updating ? 'Updating...' : 'Save Changes'}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setIsChangingPassword(false);
+                                                    setPasswords({ oldPassword: '', newPassword: '', confirmPassword: '' });
+                                                }}
+                                                className="btn-secondary py-2.5"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </form>
+                                )}
                             </div>
                         </div>
                     </div>

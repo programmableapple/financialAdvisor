@@ -1,16 +1,71 @@
-# React + Vite
+# Momentum - Financial Advisor Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, premium financial management dashboard built with React, Vite, and Tailwind CSS.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Premium Design**: Modern "glassmorphism" UI with dark mode and vibrant gradients.
+- **Responsive Layout**: Collapsible sidebar on desktop and full-screen drawer on mobile.
+- **Smart Dashboard**: Real-time stats for income, expenses, and balance.
+- **Transaction Management**: Easily track, search, and categorize your finances.
+- **Security**: Secure authentication with JWT and password update functionality.
+- **Clean Architecture**: Modular components and optimized asset management.
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **React 19** - UI Framework
+- **Vite** - High-performance build tool
+- **Tailwind CSS** - Utility-first styling
+- **React Router 7** - Declarative routing
+- **Axios** - API communication
+- **React Hot Toast** - Elegant notifications
+- **React Icons** - Minimalist icon set
 
-## Expanding the ESLint configuration
+## 🏁 Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18 or higher recommended)
+- [npm](https://www.npmjs.com/)
+
+### Installation
+
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/programmableapple/financialAdvisor.git
+    cd financialAdvisor/Frontend
+    ```
+
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
+
+3.  Set up environment variables (if applicable):
+    Create a `.env` file in the `Frontend` directory and add:
+    ```env
+    VITE_API_BASE_URL=http://localhost:5000/api
+    ```
+
+4.  Start the development server:
+    ```bash
+    npm run dev
+    ```
+
+## 🏗️ Building for Production
+
+To create an optimized production build:
+
+```bash
+npm run build
+```
+
+The output will be in the `dist` folder.
+
+## 🧹 Code Quality
+
+Run the linter to ensure code consistency:
+
+```bash
+npm run lint
+```
