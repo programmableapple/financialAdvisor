@@ -65,7 +65,7 @@ npm run dev
 
 ## 🤝 Contributing
 
-We love contributions! If you have ideas for new features or find any bugs, feel free to open an issue or submit a pull request.
+I love contributions! If you have ideas for new features or find any bugs, feel free to open an issue or submit a pull request.
 
 ---
 
