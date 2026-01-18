@@ -14,6 +14,11 @@ const goalSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    currency: {
+        type: String,
+        default: '$',
+        required: true
+    },
     currentAmount: {
         type: Number,
         default: 0

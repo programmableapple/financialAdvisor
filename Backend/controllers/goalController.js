@@ -3,18 +3,22 @@ const logger = require('./logger');
 
 exports.createGoal = async (req, res) => {
     try {
-        const { name, targetAmount, targetDate, color } = req.body;
+        const { name, targetAmount, currency, targetDate, color } = req.body;
+        const userId = req.user.id;
 
-        const goal = await Goal.create({
-            userId: req.userId,
+        const newGoal = new Goal({
+            userId,
             name,
             targetAmount,
+            currency,
             targetDate,
             color,
             currentAmount: 0
         });
 
-        logger.info(`Goal created user ${req.userId} - ${name}`);
+        const goal = await newGoal.save();
+
+        logger.info(`Goal created user ${userId} - ${name}`);
         res.status(201).json({ message: 'Goal created', goal });
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });

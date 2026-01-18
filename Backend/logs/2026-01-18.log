@@ -1,0 +1,455 @@
+{
+  "timestamp": "2026-01-18 00:00:33",
+  "level": "info",
+  "message": "║ ✅ User mahch@hotmail.com logged in successfully"
+}
+{
+  "timestamp": "2026-01-18 00:00:41",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 00:04:24",
+  "level": "info",
+  "message": "✅Server running on port 5000"
+}
+{
+  "timestamp": "2026-01-18 00:04:27",
+  "level": "info",
+  "message": "✅MongoDB Connected"
+}
+{
+  "timestamp": "2026-01-18 00:04:44",
+  "level": "info",
+  "message": "║ ✅ User mahch@hotmail.com logged in successfully"
+}
+{
+  "timestamp": "2026-01-18 00:05:27",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 00:05:29",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 00:08:30",
+  "level": "info",
+  "message": "Goal created user 695fdd8bc599b3d582d5c35d - new car"
+}
+{
+  "timestamp": "2026-01-18 00:15:59",
+  "level": "info",
+  "message": "✅Server running on port 5000"
+}
+{
+  "timestamp": "2026-01-18 00:16:03",
+  "level": "info",
+  "message": "✅MongoDB Connected"
+}
+{
+  "timestamp": "2026-01-18 00:16:18",
+  "level": "info",
+  "message": "║ ✅ User mahch@hotmail.com logged in successfully"
+}
+{
+  "timestamp": "2026-01-18 00:16:55",
+  "level": "info",
+  "message": "Goal created user 695fdd8bc599b3d582d5c35d - New Car"
+}
+{
+  "timestamp": "2026-01-18 00:17:08",
+  "level": "info",
+  "message": "Updated goal 'New Car' by -700 due to transaction 'saving for a new car'"
+}
+{
+  "timestamp": "2026-01-18 00:17:08",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 00:17:45",
+  "level": "info",
+  "message": "Updated goal 'New Car' by 500 due to transaction 'Savings for a new car'"
+}
+{
+  "timestamp": "2026-01-18 00:18:25",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 00:18:28",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 00:18:46",
+  "level": "info",
+  "message": "Goal created user 695fdd8bc599b3d582d5c35d - New Car"
+}
+{
+  "timestamp": "2026-01-18 00:19:28",
+  "level": "info",
+  "message": "Updated goal 'New Car' by 1000 due to transaction 'Savings for a new car'"
+}
+{
+  "timestamp": "2026-01-18 00:20:16",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 00:23:19",
+  "level": "info",
+  "message": "Updated goal 'New Car' by -1000 due to transaction 'Savings for a new car'"
+}
+{
+  "timestamp": "2026-01-18 00:23:19",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 00:24:02",
+  "level": "info",
+  "message": "Budget created for user 695fdd8bc599b3d582d5c35d - Shopping"
+}
+{
+  "timestamp": "2026-01-18 00:27:19",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 00:27:21",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 00:27:24",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 00:28:49",
+  "level": "info",
+  "message": "Updated goal 'New Car' by 800 due to transaction 'SAvings for a new car'"
+}
+{
+  "timestamp": "2026-01-18 00:31:27",
+  "level": "info",
+  "message": "║ ✅ User mahch@hotmail.com logged in successfully"
+}
+{
+  "timestamp": "2026-01-18 00:32:35",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 00:32:57",
+  "level": "info",
+  "message": "Updated goal 'New Car' by -800 due to transaction 'SAvings for a new car'"
+}
+{
+  "timestamp": "2026-01-18 00:32:57",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 00:33:22",
+  "level": "info",
+  "message": "✅Server running on port 5000"
+}
+{
+  "timestamp": "2026-01-18 00:33:24",
+  "level": "info",
+  "message": "✅MongoDB Connected"
+}
+{
+  "timestamp": "2026-01-18 00:33:57",
+  "level": "info",
+  "message": "║ ✅ User mahch@hotmail.com logged in successfully"
+}
+{
+  "timestamp": "2026-01-18 00:37:25",
+  "level": "info",
+  "message": "✅Server running on port 5000"
+}
+{
+  "timestamp": "2026-01-18 00:37:27",
+  "level": "info",
+  "message": "✅MongoDB Connected"
+}
+{
+  "timestamp": "2026-01-18 00:37:50",
+  "level": "info",
+  "message": "║ ✅ User mahch@hotmail.com logged in successfully"
+}
+{
+  "timestamp": "2026-01-18 00:46:40",
+  "level": "info",
+  "message": "✅Server running on port 5000"
+}
+{
+  "timestamp": "2026-01-18 00:46:42",
+  "level": "info",
+  "message": "✅MongoDB Connected"
+}
+{
+  "timestamp": "2026-01-18 00:46:55",
+  "level": "info",
+  "message": "║ ✅ User mahch@hotmail.com logged in successfully"
+}
+{
+  "timestamp": "2026-01-18 00:51:55",
+  "level": "info",
+  "message": "✅Server running on port 5000"
+}
+{
+  "timestamp": "2026-01-18 00:51:57",
+  "level": "info",
+  "message": "✅MongoDB Connected"
+}
+{
+  "timestamp": "2026-01-18 00:52:08",
+  "level": "info",
+  "message": "║ ✅ User mahch@hotmail.com logged in successfully"
+}
+{
+  "timestamp": "2026-01-18 00:52:17",
+  "level": "info",
+  "message": "Profile updated for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 00:52:29",
+  "level": "info",
+  "message": "Profile updated for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 01:02:07",
+  "level": "info",
+  "message": "✅Server running on port 5000"
+}
+{
+  "timestamp": "2026-01-18 01:02:09",
+  "level": "info",
+  "message": "✅MongoDB Connected"
+}
+{
+  "timestamp": "2026-01-18 01:02:20",
+  "level": "info",
+  "message": "║ ✅ User mahch@hotmail.com logged in successfully"
+}
+{
+  "timestamp": "2026-01-18 01:13:32",
+  "level": "info",
+  "message": "✅Server running on port 5000"
+}
+{
+  "timestamp": "2026-01-18 01:13:35",
+  "level": "info",
+  "message": "✅MongoDB Connected"
+}
+{
+  "timestamp": "2026-01-18 01:18:08",
+  "level": "info",
+  "message": "║ ✅ User mahch@hotmail.com logged in successfully"
+}
+{
+  "timestamp": "2026-01-18 01:18:19",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 01:18:22",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 01:18:25",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 01:18:28",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 01:20:17",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 01:20:40",
+  "level": "info",
+  "message": "Profile updated for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 01:22:24",
+  "level": "info",
+  "message": "║ ✅ User mahch@hotmail.com logged in successfully"
+}
+{
+  "timestamp": "2026-01-18 12:45:09",
+  "level": "info",
+  "message": "✅Server running on port 5000"
+}
+{
+  "timestamp": "2026-01-18 12:45:13",
+  "level": "info",
+  "message": "✅MongoDB Connected"
+}
+{
+  "timestamp": "2026-01-18 12:45:59",
+  "level": "info",
+  "message": "║ ✅ User mahch@hotmail.com logged in successfully"
+}
+{
+  "timestamp": "2026-01-18 12:46:27",
+  "level": "info",
+  "message": "║ ✅ User ramikh@hotmail.com logged in successfully"
+}
+{
+  "timestamp": "2026-01-18 12:56:11",
+  "level": "info",
+  "message": "Budget deleted successfully for user 69599913d424a4c616c44f67"
+}
+{
+  "timestamp": "2026-01-18 12:56:14",
+  "level": "info",
+  "message": "Budget deleted successfully for user 69599913d424a4c616c44f67"
+}
+{
+  "timestamp": "2026-01-18 12:56:15",
+  "level": "info",
+  "message": "Budget deleted successfully for user 69599913d424a4c616c44f67"
+}
+{
+  "timestamp": "2026-01-18 12:57:55",
+  "level": "info",
+  "message": "Budget created for user 69599913d424a4c616c44f67 - Cat products "
+}
+{
+  "timestamp": "2026-01-18 13:03:33",
+  "level": "info",
+  "message": "║ ✅ User ramikh@hotmail.com logged in successfully"
+}
+{
+  "timestamp": "2026-01-18 13:04:02",
+  "level": "info",
+  "message": "Budget updated successfully for user 69599913d424a4c616c44f67"
+}
+{
+  "timestamp": "2026-01-18 13:04:28",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 69599913d424a4c616c44f67"
+}
+{
+  "timestamp": "2026-01-18 13:08:37",
+  "level": "info",
+  "message": "║ ✅ User ramikh@hotmail.com logged in successfully"
+}
+{
+  "timestamp": "2026-01-18 13:08:51",
+  "level": "info",
+  "message": "║ ✅ User ramikh@hotmail.com logged in successfully"
+}
+{
+  "timestamp": "2026-01-18 13:14:00",
+  "level": "info",
+  "message": "║ ✅ User ramikh@hotmail.com logged in successfully"
+}
+{
+  "timestamp": "2026-01-18 13:24:09",
+  "level": "info",
+  "message": "✅Server running on port 5000"
+}
+{
+  "timestamp": "2026-01-18 13:24:11",
+  "level": "info",
+  "message": "✅MongoDB Connected"
+}
+{
+  "timestamp": "2026-01-18 13:24:25",
+  "level": "info",
+  "message": "║ ✅ User ramikh@hotmail.com logged in successfully"
+}
+{
+  "timestamp": "2026-01-18 13:26:34",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 69599913d424a4c616c44f67"
+}
+{
+  "timestamp": "2026-01-18 13:33:59",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 69599913d424a4c616c44f67"
+}
+{
+  "timestamp": "2026-01-18 13:34:04",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 69599913d424a4c616c44f67"
+}
+{
+  "timestamp": "2026-01-18 13:35:07",
+  "level": "info",
+  "message": "✅Server running on port 5000"
+}
+{
+  "timestamp": "2026-01-18 13:35:09",
+  "level": "info",
+  "message": "✅MongoDB Connected"
+}
+{
+  "timestamp": "2026-01-18 13:35:35",
+  "level": "info",
+  "message": "║ ✅ User ramikh@hotmail.com logged in successfully"
+}
+{
+  "timestamp": "2026-01-18 13:35:42",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 69599913d424a4c616c44f67"
+}
+{
+  "timestamp": "2026-01-18 13:35:49",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 69599913d424a4c616c44f67"
+}
+{
+  "timestamp": "2026-01-18 13:37:39",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 69599913d424a4c616c44f67"
+}
+{
+  "timestamp": "2026-01-18 13:37:43",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 69599913d424a4c616c44f67"
+}
+{
+  "timestamp": "2026-01-18 13:39:25",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 69599913d424a4c616c44f67"
+}
+{
+  "timestamp": "2026-01-18 13:39:32",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 69599913d424a4c616c44f67"
+}
+{
+  "timestamp": "2026-01-18 13:40:34",
+  "level": "info",
+  "message": "║ ✅ User mahch@hotmail.com logged in successfully"
+}
+{
+  "timestamp": "2026-01-18 13:41:25",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 13:41:42",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}
+{
+  "timestamp": "2026-01-18 13:41:45",
+  "level": "info",
+  "message": "Transaction deleted successfully for user 695fdd8bc599b3d582d5c35d"
+}

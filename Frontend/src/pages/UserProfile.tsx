@@ -4,10 +4,28 @@ import Layout from '../components/Layout';
 import StatCard from '../components/StatCard';
 import api from '../api/axios';
 import { BiWallet, BiUser, BiEnvelope, BiCalendar, BiEdit } from 'react-icons/bi';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from '@/components/ui/avatar';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
 
 const UserProfile = () => {
-    const { user } = useAuth();
+    const { user, updateUser } = useAuth();
     const [balance, setBalance] = useState<number | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -17,6 +35,20 @@ const UserProfile = () => {
         confirmPassword: ''
     });
     const [updating, setUpdating] = useState(false);
+    const [profileData, setProfileData] = useState({
+        name: user?.name || '',
+        email: user?.email || ''
+    });
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    useEffect(() => {
+        if (user) {
+            setProfileData({
+                name: user.name || '',
+                email: user.email || ''
+            });
+        }
+    }, [user]);
 
     useEffect(() => {
         const fetchBalance = async () => {
@@ -33,6 +65,21 @@ const UserProfile = () => {
 
         fetchBalance();
     }, []);
+
+    const handleUpdateProfile = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setUpdating(true);
+        try {
+            const res = await api.put('/auth/profile', profileData);
+            updateUser(res.data.user);
+            toast.success('Profile updated successfully');
+            setIsDialogOpen(false);
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || 'Failed to update profile');
+        } finally {
+            setUpdating(false);
+        }
+    };
 
     const handlePasswordChange = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -67,8 +114,8 @@ const UserProfile = () => {
     return (
         <Layout>
             <div className="mb-12">
-                <h1 className="text-4xl font-medium tracking-tight mb-2 text-white">My Profile</h1>
-                <p className="text-white/40">Manage your personal information and view account summary.</p>
+                <h1 className="text-4xl font-medium tracking-tight mb-2 text-foreground">My Profile</h1>
+                <p className="text-muted-foreground">Manage your personal information and view account summary.</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -80,122 +127,162 @@ const UserProfile = () => {
                         </div>
 
                         <div className="flex flex-col md:flex-row items-center md:items-start gap-8 relative z-10">
-                            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-4xl font-bold text-white shadow-2xl">
-                                {user?.name?.[0]?.toUpperCase() || 'U'}
-                            </div>
+                            <Avatar className="w-32 h-32 rounded-full shadow-2xl border-none">
+                                <AvatarImage src={user?.avatarUrl} alt={user?.name} />
+                                <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-4xl font-bold text-white uppercase">
+                                    {user?.name?.[0] || 'U'}
+                                </AvatarFallback>
+                            </Avatar>
 
                             <div className="flex-1 text-center md:text-left space-y-4">
                                 <div>
-                                    <h2 className="text-3xl font-bold text-white">{user?.name}</h2>
-                                    <p className="text-blue-400 font-medium tracking-wide">Premium Member</p>
+                                    <h2 className="text-3xl font-bold text-foreground">{user?.name}</h2>
+
                                 </div>
 
-                                <div className="space-y-2 pt-4 border-t border-white/10">
-                                    <div className="flex items-center justify-center md:justify-start gap-3 text-white/70">
-                                        <BiEnvelope className="text-blue-400" size={20} />
+                                <div className="space-y-2 pt-4 border-t border-border">
+                                    <div className="flex items-center justify-center md:justify-start gap-3 text-muted-foreground">
+                                        <BiEnvelope className="text-primary" size={20} />
                                         <span>{user?.email}</span>
                                     </div>
-                                    <div className="flex items-center justify-center md:justify-start gap-3 text-white/70">
+                                    <div className="flex items-center justify-center md:justify-start gap-3 text-muted-foreground">
                                         <BiCalendar className="text-purple-400" size={20} />
                                         <span>Member since {memberSince}</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <button className="hidden md:flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white text-sm font-medium transition-colors border border-white/5">
-                                <BiEdit size={16} />
-                                Edit Profile
-                            </button>
+                            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                                <DialogTrigger asChild>
+                                    <Button variant="secondary" className="hidden md:flex items-center gap-2">
+                                        <BiEdit size={16} />
+                                        Edit Profile
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px]">
+                                    <form onSubmit={handleUpdateProfile}>
+                                        <DialogHeader>
+                                            <DialogTitle>Edit profile</DialogTitle>
+                                            <DialogDescription>
+                                                Make changes to your profile here. Click save when you&apos;re done.
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="grid gap-4 py-4">
+                                            <div className="grid gap-3">
+                                                <Label htmlFor="name">Name</Label>
+                                                <Input
+                                                    id="name"
+                                                    value={profileData.name}
+                                                    onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
+                                                    className="col-span-3"
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="grid gap-3">
+                                                <Label htmlFor="email">Email</Label>
+                                                <Input
+                                                    id="email"
+                                                    type="email"
+                                                    value={profileData.email}
+                                                    onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                                                    className="col-span-3"
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                        <DialogFooter>
+                                            <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+                                            <Button type="submit" disabled={updating}>
+                                                {updating ? 'Saving...' : 'Save changes'}
+                                            </Button>
+                                        </DialogFooter>
+                                    </form>
+                                </DialogContent>
+                            </Dialog>
                         </div>
                     </div>
 
                     {/* Account Settings */}
                     <div className="glass-card p-8">
-                        <h3 className="text-xl font-medium mb-6 text-white">Account Settings</h3>
+                        <h3 className="text-xl font-medium mb-6 text-foreground">Account Settings</h3>
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5">
-                                <div>
-                                    <p className="text-white font-medium">Email Preferences</p>
-                                    <p className="text-white/40 text-sm">Manage your notifications</p>
-                                </div>
-                                <button className="text-blue-400 hover:text-blue-300 text-sm font-medium">Manage</button>
-                            </div>
-
-                            <div className="p-4 rounded-xl bg-white/5 border border-white/5 space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-white font-medium">Security</p>
-                                        <p className="text-white/40 text-sm">Change password and 2FA</p>
+                            <Card>
+                                <CardHeader className="flex-row items-center justify-between pb-4">
+                                    <div className="space-y-1">
+                                        <CardTitle className="text-lg">Security</CardTitle>
+                                        <CardDescription>Change your password</CardDescription>
                                     </div>
                                     {!isChangingPassword && (
-                                        <button
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
                                             onClick={() => setIsChangingPassword(true)}
-                                            className="text-blue-400 hover:text-blue-300 text-sm font-medium"
                                         >
                                             Update
-                                        </button>
+                                        </Button>
                                     )}
-                                </div>
+                                </CardHeader>
 
                                 {isChangingPassword && (
-                                    <form onSubmit={handlePasswordChange} className="pt-4 border-t border-white/5 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div className="md:col-span-2">
-                                                <label className="block text-xs font-medium text-white/40 uppercase tracking-wider mb-1.5 ml-1">Current Password</label>
-                                                <input
-                                                    type="password"
-                                                    required
-                                                    value={passwords.oldPassword}
-                                                    onChange={(e) => setPasswords({ ...passwords, oldPassword: e.target.value })}
-                                                    className="input-field"
-                                                    placeholder="Enter current password"
-                                                />
+                                    <CardContent className="pt-0 border-t border-border mt-4">
+                                        <form onSubmit={handlePasswordChange} className="space-y-4 pt-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="md:col-span-2 space-y-1.5">
+                                                    <Label htmlFor="oldPassword">Current Password</Label>
+                                                    <Input
+                                                        id="oldPassword"
+                                                        type="password"
+                                                        required
+                                                        value={passwords.oldPassword}
+                                                        onChange={(e) => setPasswords({ ...passwords, oldPassword: e.target.value })}
+                                                        placeholder="Enter current password"
+                                                    />
+                                                </div>
+                                                <div className="space-y-1.5">
+                                                    <Label htmlFor="newPassword">New Password</Label>
+                                                    <Input
+                                                        id="newPassword"
+                                                        type="password"
+                                                        required
+                                                        value={passwords.newPassword}
+                                                        onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
+                                                        placeholder="New password"
+                                                    />
+                                                </div>
+                                                <div className="space-y-1.5">
+                                                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                                                    <Input
+                                                        id="confirmPassword"
+                                                        type="password"
+                                                        required
+                                                        value={passwords.confirmPassword}
+                                                        onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
+                                                        placeholder="Confirm new password"
+                                                    />
+                                                </div>
                                             </div>
-                                            <div>
-                                                <label className="block text-xs font-medium text-white/40 uppercase tracking-wider mb-1.5 ml-1">New Password</label>
-                                                <input
-                                                    type="password"
-                                                    required
-                                                    value={passwords.newPassword}
-                                                    onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
-                                                    className="input-field"
-                                                    placeholder="New password"
-                                                />
+                                            <div className="flex items-center gap-3 pt-2">
+                                                <Button
+                                                    type="submit"
+                                                    disabled={updating}
+                                                >
+                                                    {updating ? 'Updating...' : 'Save Changes'}
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    variant="secondary"
+                                                    onClick={() => {
+                                                        setIsChangingPassword(false);
+                                                        setPasswords({ oldPassword: '', newPassword: '', confirmPassword: '' });
+                                                    }}
+                                                >
+                                                    Cancel
+                                                </Button>
                                             </div>
-                                            <div>
-                                                <label className="block text-xs font-medium text-white/40 uppercase tracking-wider mb-1.5 ml-1">Confirm New Password</label>
-                                                <input
-                                                    type="password"
-                                                    required
-                                                    value={passwords.confirmPassword}
-                                                    onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
-                                                    className="input-field"
-                                                    placeholder="Confirm new password"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-3 pt-2">
-                                            <button
-                                                type="submit"
-                                                disabled={updating}
-                                                className="btn-primary py-2.5"
-                                            >
-                                                {updating ? 'Updating...' : 'Save Changes'}
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    setIsChangingPassword(false);
-                                                    setPasswords({ oldPassword: '', newPassword: '', confirmPassword: '' });
-                                                }}
-                                                className="btn-secondary py-2.5"
-                                            >
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    </form>
+                                        </form>
+                                    </CardContent>
                                 )}
-                            </div>
+                            </Card>
                         </div>
                     </div>
                 </div>
@@ -210,12 +297,12 @@ const UserProfile = () => {
                     />
 
                     <div className="glass-card p-6">
-                        <h3 className="text-lg font-medium mb-4 text-white">Quick Actions</h3>
+                        <h3 className="text-lg font-medium mb-4 text-foreground">Quick Actions</h3>
                         <div className="space-y-3">
-                            <button onClick={() => toast.success('Feature coming soon!')} className="w-full py-3 px-4 rounded-xl bg-white/5 hover:bg-white/10 text-left text-sm text-white/80 transition-colors">
+                            <button onClick={() => toast.success('Feature coming soon!')} className="w-full py-3 px-4 rounded-xl bg-muted hover:bg-accent text-left text-sm text-foreground/80 transition-colors">
                                 Export Data
                             </button>
-                            <button onClick={() => toast.success('Feature coming soon!')} className="w-full py-3 px-4 rounded-xl bg-white/5 hover:bg-white/10 text-left text-sm text-white/80 transition-colors">
+                            <button onClick={() => toast.success('Feature coming soon!')} className="w-full py-3 px-4 rounded-xl bg-muted hover:bg-accent text-left text-sm text-foreground/80 transition-colors">
                                 Delete Account
                             </button>
                         </div>

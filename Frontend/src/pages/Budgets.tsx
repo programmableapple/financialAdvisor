@@ -2,12 +2,39 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import api from '../api/axios';
 import Layout from '../components/Layout';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { AmountInput } from '@/components/ui/amount-input';
+import { BiPlus, BiX, BiTrash, BiPencil } from 'react-icons/bi';
+import { SpinnerEmpty } from '../components/spinner-empty';
+import { IconWallet } from '@tabler/icons-react';
+import {
+    Empty,
+    EmptyContent,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+} from "@/components/ui/empty";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface Budget {
-    _id: string;
+    id: string;
+    _id?: string;
     category: string;
     amount: number;
+    currency: string;
     spent: number;
     remaining: number;
     percentage: number;
@@ -21,6 +48,7 @@ interface Category {
 interface BudgetFormData {
     category: string;
     amount: string | number;
+    currency: string;
     month: number;
     year: number;
 }
@@ -30,11 +58,13 @@ const Budgets = () => {
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [showForm, setShowForm] = useState<boolean>(false);
+    const [editingId, setEditingId] = useState<string | null>(null);
     const location = useLocation();
 
     const [formData, setFormData] = useState<BudgetFormData>({
         category: '',
         amount: '',
+        currency: '$',
         month: new Date().getMonth() + 1,
         year: new Date().getFullYear()
     });
@@ -73,13 +103,42 @@ const Budgets = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await api.post('/budgets', formData);
-            toast.success('Budget created');
+            if (editingId) {
+                await api.put(`/budgets/${editingId}`, formData);
+                toast.success('Budget updated');
+            } else {
+                await api.post('/budgets', formData);
+                toast.success('Budget created');
+            }
             setShowForm(false);
+            setEditingId(null);
             setFormData({ ...formData, amount: '', category: '' });
             fetchBudgets();
         } catch (error: any) {
-            toast.error(error.response?.data?.message || 'Failed to create budget');
+            toast.error(error.response?.data?.message || 'Failed to save budget');
+        }
+    };
+
+    const handleEdit = (budget: Budget) => {
+        setFormData({
+            category: budget.category,
+            amount: budget.amount,
+            currency: budget.currency,
+            month: new Date().getMonth() + 1,
+            year: new Date().getFullYear()
+        });
+        setEditingId(budget._id!);
+        setShowForm(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleDelete = async (id: string) => {
+        try {
+            await api.delete(`/budgets/${id}`);
+            setBudgets(prev => prev.filter(b => b._id !== id));
+            toast.success('Budget deleted');
+        } catch (error) {
+            toast.error('Failed to delete budget');
         }
     };
 
@@ -87,23 +146,36 @@ const Budgets = () => {
         <Layout>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-12">
                 <div>
-                    <h1 className="text-4xl font-medium tracking-tight mb-2 text-white">Budgets</h1>
-                    <p className="text-white/40">Plan your spending limits for each category.</p>
+                    <h1 className="text-4xl font-medium tracking-tight mb-2 text-foreground">Budgets</h1>
+                    <p className="text-muted-foreground">Plan your spending limits for each category.</p>
                 </div>
-                <button
-                    className={showForm ? "btn-secondary" : "btn-primary"}
-                    onClick={() => setShowForm(!showForm)}
+                <Button
+                    variant={showForm ? "outline" : "default"}
+                    size="lg"
+                    onClick={() => {
+                        setShowForm(!showForm);
+                        if (showForm) {
+                            setEditingId(null);
+                            setFormData({ ...formData, amount: '', category: '' });
+                        }
+                    }}
+                    className="gap-2"
                 >
-                    {showForm ? 'Cancel' : '+ Create Budget'}
-                </button>
+                    {showForm ? (
+                        <><BiX size={20} /> Cancel</>
+                    ) : (
+                        <><BiPlus size={20} /> Create Budget</>
+                    )}
+                </Button>
             </div>
 
             {showForm && (
                 <div className="glass-card p-8 mb-12">
                     <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div>
-                            <label className="block text-[0.8rem] font-medium text-white/50 mb-2 ml-1 uppercase tracking-widest">Category</label>
-                            <input
+                        <div className="space-y-2">
+                            <label htmlFor="category" className="form-label">Category</label>
+                            <Input
+                                id="category"
                                 list="budget-categories"
                                 type="text"
                                 value={formData.category}
@@ -115,18 +187,19 @@ const Budgets = () => {
                                 {categories.map(c => <option key={c._id} value={c.name} />)}
                             </datalist>
                         </div>
-                        <div>
-                            <label className="block text-[0.8rem] font-medium text-white/50 mb-2 ml-1 uppercase tracking-widest">Monthly Limit</label>
-                            <input
-                                type="number"
-                                value={formData.amount}
-                                onChange={e => setFormData({ ...formData, amount: e.target.value })}
-                                placeholder="0.00"
+                        <div className="space-y-2">
+                            <label htmlFor="amount" className="form-label">Monthly Limit</label>
+                            <AmountInput
+                                id="amount"
                                 required
+                                value={formData.amount}
+                                onChange={(val) => setFormData({ ...formData, amount: val })}
+                                currency={formData.currency}
+                                onCurrencyChange={(val) => setFormData({ ...formData, currency: val })}
                             />
                         </div>
                         <div className="flex items-end">
-                            <button type="submit" className="w-full btn-primary !py-[0.875rem]">Save Budget</button>
+                            <Button type="submit" size="lg" className="w-full">{editingId ? 'Update Budget' : 'Save Budget'}</Button>
                         </div>
                     </form>
                 </div>
@@ -134,16 +207,29 @@ const Budgets = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {loading ? (
-                    <div className="col-span-full p-12 text-center text-white/30 italic transition-all animate-pulse">
-                        Loading budgets...
-                    </div>
+                    <SpinnerEmpty />
                 ) : budgets.length === 0 ? (
-                    <div className="col-span-full p-12 text-center text-white/30 border-2 border-dashed border-white/5 rounded-3xl italic">
-                        No budgets set for this month.
+                    <div className="col-span-full">
+                        <Empty>
+                            <EmptyHeader>
+                                <EmptyMedia variant="icon">
+                                    <IconWallet className="size-6" />
+                                </EmptyMedia>
+                                <EmptyTitle>No budgets yet</EmptyTitle>
+                                <EmptyDescription>
+                                    Start managing your finances by creating your first budget and track your spending limits.
+                                </EmptyDescription>
+                            </EmptyHeader>
+                            <EmptyContent>
+                                <Button onClick={() => setShowForm(true)} size="lg" className="gap-2">
+                                    <BiPlus size={20} /> Create Your First Budget
+                                </Button>
+                            </EmptyContent>
+                        </Empty>
                     </div>
                 ) : (
                     budgets.map(budget => {
-                        const percent = Math.min(budget.percentage, 100);
+                        const percent = Math.round(Math.min(budget.percentage || 0, 100));
                         let colorClass = 'bg-success';
                         let overflowClass = '';
 
@@ -157,36 +243,71 @@ const Budgets = () => {
                             <div key={budget._id} className={`glass-card p-8 group transition-all duration-300 hover:translate-y-[-4px] ${overflowClass}`}>
                                 <div className="flex justify-between items-start mb-6">
                                     <div>
-                                        <h3 className="text-xl font-medium text-white group-hover:text-white/90 transition-colors uppercase tracking-tight">{budget.category}</h3>
-                                        <p className="text-white/30 text-sm mt-1">${budget.amount} monthly limit</p>
+                                        <h3 className="text-xl font-medium text-foreground group-hover:text-primary transition-colors uppercase tracking-tight">{budget.category}</h3>
+                                        <p className="text-muted-foreground text-sm mt-1">${budget.amount} monthly limit</p>
+                                    </div>
+                                    <div className="flex gap-1">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="text-muted-foreground hover:text-primary opacity-0 group-hover:opacity-100 transition-all font-bold"
+                                            onClick={() => handleEdit(budget)}
+                                        >
+                                            <BiPencil size={18} />
+                                        </Button>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-all font-bold"
+                                                >
+                                                    <BiTrash size={18} />
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        This action cannot be undone. This will permanently delete your budget for {budget.category}.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction onClick={() => handleDelete(budget._id!)}>
+                                                        Delete
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
                                     </div>
                                 </div>
 
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-end">
                                         <div>
-                                            <p className="text-[0.7rem] font-medium text-white/40 uppercase tracking-widest mb-1">Spent</p>
-                                            <p className={`text-2xl font-semibold tracking-tight ${percent >= 100 ? 'text-red-400' : 'text-white'}`}>
-                                                ${budget.spent.toLocaleString()}
+                                            <p className="text-[0.7rem] font-medium text-muted-foreground uppercase tracking-widest mb-1">Spent</p>
+                                            <p className={`text-2xl font-semibold tracking-tight ${percent >= 100 ? 'text-destructive' : 'text-foreground'}`}>
+                                                {budget.currency || '$'}{budget.spent.toLocaleString()}
                                             </p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-[0.7rem] font-medium text-white/40 uppercase tracking-widest mb-1">Remaining</p>
-                                            <p className="text-xl font-medium text-white/60 tracking-tight">
-                                                ${Math.max(0, budget.remaining).toLocaleString()}
+                                            <p className="text-[0.7rem] font-medium text-muted-foreground uppercase tracking-widest mb-1">Remaining</p>
+                                            <p className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                                                Spent {budget.currency || '$'}{budget.spent.toLocaleString()} <span className="text-muted-foreground/50">/ {budget.currency || '$'}{budget.amount.toLocaleString()}</span>
                                             </p>
                                         </div>
                                     </div>
 
                                     <div className="relative pt-2">
-                                        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                        <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
                                             <div
                                                 className={`h-full rounded-full transition-all duration-1000 ease-out ${colorClass}`}
                                                 style={{ width: `${percent}%` }}
                                             ></div>
                                         </div>
                                         <div className="absolute -top-1 right-0">
-                                            <span className={`text-[0.65rem] font-bold px-1.5 py-0.5 rounded-sm ${percent >= 100 ? 'bg-red-400/10 text-red-400' : 'bg-white/5 text-white/40'}`}>
+                                            <span className={`text-[0.65rem] font-bold px-1.5 py-0.5 rounded-sm ${percent >= 100 ? 'bg-destructive/10 text-destructive' : 'bg-muted text-muted-foreground'}`}>
                                                 {percent}%
                                             </span>
                                         </div>
@@ -197,7 +318,7 @@ const Budgets = () => {
                     })
                 )}
             </div>
-        </Layout>
+        </Layout >
     );
 };
 

@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import api from '../api/axios';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 
 interface User {
     id?: string;
@@ -16,6 +16,7 @@ interface AuthContextType {
     login: (email: string, password: string) => Promise<boolean>;
     register: (name: string, email: string, password: string) => Promise<boolean>;
     logout: () => void;
+    updateUser: (data: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -47,7 +48,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             try {
                 // Try to fetch fresh user data
                 const res = await api.get('/auth/profile');
-                console.log('Fetched updated profile:', res.data); // Debug log
                 setUser(res.data);
                 localStorage.setItem('user', JSON.stringify(res.data));
             } catch (error) {
@@ -98,11 +98,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         toast.success('Logged out successfully');
     };
 
+    const updateUser = (data: Partial<User>) => {
+        if (user) {
+            const updated = { ...user, ...data };
+            setUser(updated);
+            localStorage.setItem('user', JSON.stringify(updated));
+        }
+    };
+
     const value: AuthContextType = {
         user,
         login,
         register,
         logout,
+        updateUser,
         loading
     };
 

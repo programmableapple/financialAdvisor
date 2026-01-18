@@ -14,6 +14,11 @@ const recurringSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    currency: {
+        type: String,
+        default: '$',
+        required: true
+    },
     category: {
         type: String,
         required: true

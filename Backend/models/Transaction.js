@@ -15,6 +15,11 @@ const transactionSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  currency: {
+    type: String,
+    default: '$',
+    required: true
+  },
   category: {
     type: String,
     required: true
@@ -26,6 +31,11 @@ const transactionSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now
+  },
+  status: {
+    type: String,
+    enum: ['completed', 'upcoming'],
+    default: 'completed'
   },
   createdAt: {
     type: Date,

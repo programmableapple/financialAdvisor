@@ -11,18 +11,22 @@ exports.getRecurring = async (req, res) => {
     }
 };
 
-exports.addRecurring = async (req, res) => {
+exports.createRecurring = async (req, res) => {
     try {
-        const { name, amount, category, frequency, nextDueDate } = req.body;
+        const { name, amount, currency, category, frequency, nextDueDate } = req.body;
+        const userId = req.user.id;
 
-        const recurring = await Recurring.create({
-            userId: req.userId,
+        const newItem = new Recurring({
+            userId,
             name,
             amount,
+            currency,
             category,
             frequency,
             nextDueDate
         });
+
+        const recurring = await newItem.save();
 
         res.status(201).json({ message: 'Subscription added', recurring });
     } catch (err) {
@@ -51,6 +55,8 @@ exports.detectRecurring = async (req, res) => {
             date: { $gte: threeMonthsAgo }
         });
 
+        logger.info(`[Recurring Debug] Found ${transactions.length} total txs since ${threeMonthsAgo.toISOString()}`);
+
         // Group by description (normalized)
         const grouped = {};
         transactions.forEach(t => {
@@ -64,11 +70,15 @@ exports.detectRecurring = async (req, res) => {
         // Check for patterns
         Object.keys(grouped).forEach(key => {
             const txs = grouped[key];
+            logger.info(`[Recurring Debug] Checking '${key}': ${txs.length} occurrences`);
+
             // If appears 2 or more times
             if (txs.length >= 2) {
                 // Check if amounts are similar (within 10%)
                 const avgAmount = txs.reduce((sum, t) => sum + t.amount, 0) / txs.length;
                 const consistentAmount = txs.every(t => Math.abs(t.amount - avgAmount) < (avgAmount * 0.1));
+
+                logger.info(`[Recurring Debug] '${key}' - Avg: ${avgAmount}, Consistent: ${consistentAmount}`);
 
                 if (consistentAmount) {
                     // Check if already exists in active recurring
@@ -89,8 +99,11 @@ exports.detectRecurring = async (req, res) => {
 
         const finalSuggestions = suggestions.filter(s => !existingNames.has(s.name.toLowerCase()));
 
+        logger.info(`[Recurring Debug] Final suggestions: ${finalSuggestions.length}`);
+
         res.json({ suggestions: finalSuggestions });
     } catch (err) {
+        logger.error(`[Recurring Debug] Error: ${err.message}`);
         res.status(500).json({ message: 'Server error', error: err.message });
     }
 };

@@ -14,6 +14,11 @@ const budgetSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  currency: {
+    type: String,
+    default: '$',
+    required: true
+  },
   month: {
     type: Number,
     required: true,

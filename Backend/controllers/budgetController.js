@@ -4,19 +4,37 @@ const logger = require('./logger');
 
 exports.createBudget = async (req, res) => {
   try {
-    const { category, amount, month, year } = req.body;
+    const { category, amount, currency, month, year } = req.body;
+    const userId = req.user.id;
+
+    // Check if budget already exists
+    const existingBudget = await Budget.findOne({
+      userId,
+      category,
+      month,
+      year
+    });
+
+    if (existingBudget) {
+      existingBudget.amount = amount;
+      if (currency) existingBudget.currency = currency;
+      await existingBudget.save();
+      logger.info(`Budget updated for user ${userId} - ${category} `);
+      return res.json({ message: 'Budget updated successfully', budget: existingBudget });
+    }
 
     const newBudget = new Budget({
-      userId: req.userId,
+      userId,
       category,
       amount,
+      currency,
       month,
       year
     });
 
     await newBudget.save();
 
-    logger.info(`Budget created for user ${req.userId} - ${category}`);
+    logger.info(`Budget created for user ${userId} - ${category} `);
 
     res.status(201).json({ message: 'Budget created successfully', budget: newBudget });
   } catch (err) {
@@ -55,7 +73,7 @@ exports.getBudgets = async (req, res) => {
           ...budget.toObject(),
           spent,
           remaining: budget.amount - spent,
-          percentage: (spent / budget.amount) * 100
+          percentage: budget.amount > 0 ? (spent / budget.amount) * 100 : 0
         };
       })
     );

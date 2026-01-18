@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { BiEnvelope, BiLockAlt } from 'react-icons/bi';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, CardAction } from '@/components/ui/card';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -22,57 +25,72 @@ const Login = () => {
 
     return (
         <div className="min-h-screen bg-transparent flex items-center justify-center p-6">
-            <div className="glass-card w-full max-w-md p-10">
-                <div className="mb-10 text-center">
-                    <h1 className="text-3xl font-medium tracking-tight mb-2 text-white">Welcome back</h1>
-                    <p className="text-white/40">Enter your details to access your account.</p>
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div>
-                        <label className="block text-[0.8rem] font-medium text-white/50 mb-2 ml-1 uppercase tracking-widest">Email Address</label>
-                        <div className="relative">
-                            <BiEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" size={20} />
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="pl-12"
-                                required
-                            />
+            <Card className="w-full max-w-sm">
+                <CardHeader>
+                    <CardTitle className="text-2xl">Login to your account</CardTitle>
+                    <CardDescription>
+                        Enter your email below to login to your account
+                    </CardDescription>
+                    <CardAction>
+                        <Button variant="link" asChild className="p-0 h-auto">
+                            <Link to="/register">Sign Up</Link>
+                        </Button>
+                    </CardAction>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleSubmit}>
+                        <div className="flex flex-col gap-6">
+                            <div className="grid gap-2">
+                                <Label htmlFor="email">Email</Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="m@example.com"
+                                    required
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <div className="flex items-center">
+                                    <Label htmlFor="password">Password</Label>
+                                    {/* TODO: Implement forgot password functionality */}
+                                    {/* <a
+                                        href="#"
+                                        className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                                    >
+                                        Forgot your password?
+                                    </a> */}
+                                </div>
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
+                            </div>
                         </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-[0.8rem] font-medium text-white/50 mb-2 ml-1 uppercase tracking-widest">Password</label>
-                        <div className="relative">
-                            <BiLockAlt className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" size={20} />
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="pl-12"
-                                required
-                            />
-                        </div>
-                    </div>
-
-                    <button
+                    </form>
+                </CardContent>
+                <CardFooter className="flex-col gap-2">
+                    <Button
                         type="submit"
+                        className="w-full"
                         disabled={loading}
-                        className="w-full btn-primary justify-center !py-4 text-lg mt-4 disabled:opacity-50 transition-all active:scale-[0.98]"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            handleSubmit(e as any);
+                        }}
                     >
-                        {loading ? 'Signing in...' : 'Sign In'}
-                    </button>
-                </form>
-
-                <p className="text-center mt-10 text-white/40">
-                    Don't have an account?{' '}
-                    <Link to="/register" className="text-white font-medium hover:underline transition-all">
-                        Create one
-                    </Link>
-                </p>
-            </div>
+                        {loading ? 'Logging in...' : 'Login'}
+                    </Button>
+                    {/* TODO: Implement Google Login */}
+                    {/* <Button variant="outline" className="w-full">
+                        Login with Google
+                    </Button> */}
+                </CardFooter>
+            </Card>
         </div>
     );
 };

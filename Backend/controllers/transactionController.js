@@ -1,18 +1,81 @@
 const Transaction = require('../models/Transaction');
+const Goal = require('../models/Goal');
 const logger = require('./logger');
+
+// Helper to update linked goal
+const updateLinkedGoal = async (userId, transaction, action = 'add') => {
+  try {
+    // specific logic: Find goal by name matching category or description
+    const goal = await Goal.findOne({
+      userId,
+      name: { $in: [transaction.category, transaction.description] }
+    });
+
+    if (goal) {
+      let change = transaction.amount;
+      if (action === 'remove') change = -change;
+
+      goal.currentAmount += change;
+      await goal.save();
+      logger.info(`Updated goal '${goal.name}' by ${change} due to transaction '${transaction.description}'`);
+    }
+  } catch (err) {
+    logger.error(`Error updating linked goal: ${err.message}`);
+  }
+};
+
+const checkDueTransactions = async (userId) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize to start of day
+
+    // Find upcoming transactions due today
+    const dueTransactions = await Transaction.find({
+      userId,
+      status: 'upcoming',
+      date: { $lte: new Date() }
+    });
+
+    if (dueTransactions.length > 0) {
+      const result = await Transaction.updateMany(
+        { _id: { $in: dueTransactions.map(t => t._id) } },
+        { status: 'completed' }
+      );
+
+      if (result.modifiedCount > 0) {
+        // Update goals for these newly completed transactions
+        for (const t of dueTransactions) {
+          await updateLinkedGoal(userId, t, 'add');
+        }
+        logger.info(`${result.modifiedCount} upcoming transactions converted to completed for user ${userId}`);
+      }
+    }
+  } catch (err) {
+    logger.error(`Error in checkDueTransactions: ${err.message}`);
+  }
+};
 
 exports.createTransaction = async (req, res) => {
   try {
-    const { type, amount, category, description, date } = req.body;
+    const { type, amount, category, description, date, status } = req.body;
 
+    // If date is in the future and status not specified, default to upcoming
+    // but the user requirement said "not add as expense/income for now", 
+    // so we'll respect the status sent from frontend.
     const transaction = await Transaction.create({
       userId: req.userId,
       type,
       amount,
       category,
       description,
-      date: date || Date.now()
+      date: date || Date.now(),
+      status: status || 'completed'
     });
+
+    // Only update goal if transaction is completed (active)
+    if (transaction.status === 'completed') {
+      await updateLinkedGoal(req.userId, transaction, 'add');
+    }
 
     res.status(201).json({
       message: 'Transaction created successfully',
@@ -25,7 +88,9 @@ exports.createTransaction = async (req, res) => {
 
 exports.getTransactions = async (req, res) => {
   try {
-    const { startDate, endDate, type, category } = req.query;
+    const { startDate, endDate, type, category, status } = req.query;
+
+    await checkDueTransactions(req.userId);
 
     const filter = { userId: req.userId };
 
@@ -37,6 +102,7 @@ exports.getTransactions = async (req, res) => {
 
     if (type) filter.type = type;
     if (category) filter.category = category;
+    if (status) filter.status = status;
 
     const transactions = await Transaction.find(filter).sort({ date: -1 });
 
@@ -65,16 +131,30 @@ exports.getTransactionById = async (req, res) => {
 
 exports.updateTransaction = async (req, res) => {
   try {
-    const { type, amount, category, description, date } = req.body;
+    const { type, amount, currency, category, description, date } = req.body;
 
+    // First find original to revert its effect on goal if necessary
+    const originalTx = await Transaction.findOne({ _id: req.params.id, userId: req.userId });
+    if (!originalTx) return res.status(404).json({ message: 'Transaction not found' });
+
+    // Update the transaction
     const transaction = await Transaction.findOneAndUpdate(
       { _id: req.params.id, userId: req.userId },
-      { type, amount, category, description, date },
+      { type, amount, currency, category, description, date },
       { new: true }
     );
 
     if (!transaction) {
       return res.status(404).json({ message: 'Transaction not found' });
+    }
+
+    // Revert old goal impact and apply new (simple approach)
+    // Only if status was/is completed (for now assuming simple edits on active txs)
+    if (originalTx.status === 'completed') {
+      await updateLinkedGoal(req.userId, originalTx, 'remove');
+    }
+    if (transaction.status === 'completed') {
+      await updateLinkedGoal(req.userId, transaction, 'add');
     }
 
     res.json({
@@ -98,6 +178,10 @@ exports.deleteTransaction = async (req, res) => {
       return res.status(404).json({ message: 'Transaction not found' });
     }
 
+    if (transaction.status === 'completed') {
+      await updateLinkedGoal(req.userId, transaction, 'remove');
+    }
+
     logger.info(`Transaction deleted successfully for user ${req.userId}`);
 
     res.json({ message: 'Transaction deleted successfully' });
@@ -110,7 +194,9 @@ exports.getStats = async (req, res) => {
   try {
     const { month, year } = req.query;
 
-    const filter = { userId: req.userId };
+    await checkDueTransactions(req.userId);
+
+    const filter = { userId: req.userId, status: 'completed' };
 
     if (month && year) {
       const startDate = new Date(year, month - 1, 1);
@@ -157,6 +243,7 @@ exports.getSpendingTrends = async (req, res) => {
     const transactions = await Transaction.find({
       userId: req.userId,
       type: 'expense',
+      status: 'completed',
       date: { $gte: sixMonthsAgo }
     }).sort({ date: 1 });
 
